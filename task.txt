@@ -1,0 +1,7 @@
+You are tasked with building a simple REST API for managing a collection of books. The API should support the following operations:
+Get all books: Retrieve a list of all books.
+Get a book by ID: Retrieve a specific book by its unique ID.
+Add a new book: Add a new book to the collection.
+Update a book: Update an existing book's details.
+Delete a book: Remove a book from the collection
+Design and implement the REST API using Node.js & Express.js. Ensure proper error handling & validation of inputs
