@@ -1,17 +1,12 @@
 const express = require('express')
 require('dotenv').config()
 const { default: mongoose } = require('mongoose')
-const bookController = require('./controllers/book.controller')
 const app = express()
 
 app.use(express.json({limit:'100mb'}))
 app.use(express.urlencoded({extended: false}))
 
-app.get('/api/books', bookController.getAllBooks)
-app.post('/api/books', bookController.addBook)
-app.get('/api/books/:id', bookController.getSingleBook)
-app.put('/api/books/:id', bookController.updateBook)
-app.delete('/api/books/:id', bookController.deleteBook)
+app.use('/api/books', require('./routes/book.routes'))
 
 mongoose.connect(process.env.MONGODB_URI).then((res)=> {
   console.log('db connected');

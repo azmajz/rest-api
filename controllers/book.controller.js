@@ -1,96 +1,89 @@
-const bookModel = require("../model/book.model")
+const bookModel = require("../model/book.model");
 
-
-const getAllBooks = async(req, res) => {
+const getAllBooks = async (req, res) => {
   try {
-    const books = await bookModel.find()
-
-    res.json({success: true, books})
-
+    const books = await bookModel.find();
+    res.json({ success: true, books });
   } catch (error) {
-    res.json({success: false, error})
+    res.status(500).json({ success: false, error: 'Server Error' });
   }
-}
+};
 
-
-const getSingleBook = async(req, res) => {
+const getSingleBook = async (req, res) => {
   try {
-    const book = await bookModel.findById(req.params.id)
+    const book = await bookModel.findById(req.params.id);
 
-    if(!book) {
-     return res.json({success: false, error: 'no book found'})
+    if (!book) {
+      return res.status(404).json({ success: false, error: 'No book found' });
     }
-    
-    res.json({success: true, book})
 
+    res.json({ success: true, book });
   } catch (error) {
-    res.json({success: false, error})
+    res.status(500).json({ success: false, error: 'Server Error' });
   }
-}
+};
 
-
-const addBook = async(req, res) => {
+const addBook = async (req, res) => {
   try {
-    const {author, title, description} = req.body
+    const { author, title, description } = req.body;
 
-    if(!author || !title || !description){
-      return res.json({success: false, error: 'Please fill all fields'})
+    if (!author || !title || !description) {
+      return res.status(400).json({ success: false, error: 'Please fill all fields' });
     }
 
     const book = await bookModel.create({
       author,
       title,
-      description
-    })
+      description,
+    });
 
-    res.json({success: true, id: book.id})
-
+    res.status(201).json({ success: true, id: book._id });
   } catch (error) {
-    res.json({success: false, error})
+    res.status(500).json({ success: false, error: 'Server Error' });
   }
-}
+};
 
-
-const updateBook = async(req, res) => {
+const updateBook = async (req, res) => {
   try {
-    const { id } = req.params
-    const {author, title, description} = req.body
-    const updateBook = await bookModel.updateOne({ id }, {
-      author,
-      title,
-      description
-    })
+    const { id } = req.params;
+    const { author, title, description } = req.body;
 
-    res.json({success: true, updateBook})
+    const updatedBook = await bookModel.findByIdAndUpdate(
+      id,
+      { author, title, description },
+      { new: true, runValidators: true }
+    );
 
-  } catch (error) {
-    res.json({success: false, error})
-  }
-}
-
-
-const deleteBook = async(req, res) => {
-  try {
-    const { id } = req.params
-
-    const deletedBook = await bookModel.deleteOne(id)
-    if(!deletedBook) {
-      return res.json({success: false, error: 'no book found'})
+    if (!updatedBook) {
+      return res.status(404).json({ success: false, error: 'No book found' });
     }
 
-    res.json({success: true, deletedBook})
-
+    res.json({ success: true, updatedBook });
   } catch (error) {
-    res.json({success: false, error})
+    res.status(500).json({ success: false, error: 'Server Error' });
   }
-}
+};
 
+const deleteBook = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const deletedBook = await bookModel.findByIdAndDelete(id);
+
+    if (!deletedBook) {
+      return res.status(404).json({ success: false, error: 'No book found' });
+    }
+
+    res.json({ success: true, deletedBook });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server Error' });
+  }
+};
 
 module.exports = {
   getAllBooks,
   getSingleBook,
   addBook,
   updateBook,
-  deleteBook
-}
+  deleteBook,
+};
